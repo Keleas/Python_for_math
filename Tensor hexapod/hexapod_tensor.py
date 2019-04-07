@@ -154,6 +154,12 @@ class Hexapod:
 
         plt.figure(figsize=(12, 10))
         ax = plt.axes(projection='3d')
+
+        # Make a 3D quiver plot
+        x, y, z = np.zeros((3,3))
+        u, v, w = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+        # ax.quiver(x, y, z, u, v, w, arrow_length_ratio=0.1)
         colors = {0: 'r', 1: 'orange',
                   2: 'g', 3: 'olive',
                   4: 'b', 5: 'navy'}
