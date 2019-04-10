@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b046ed65-e539-4699-b5e7-c1e33c48ea90" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../hexapod_tensor.py" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/path_find_dynamic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexapod_tensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexapod_tensor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -29,10 +31,23 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hexapod_tensor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="19" lean-forward="true" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+            <state relative-caret-position="555">
+              <caret line="204" column="44" lean-forward="true" selection-start-line="204" selection-start-column="44" selection-end-line="204" selection-end-column="44" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#8735#9543#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/path_find_dynamic.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1155">
+              <caret line="81" column="16" selection-start-line="81" selection-start-column="16" selection-end-line="81" selection-end-column="16" />
+              <folding>
+                <element signature="e#111#122#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -53,14 +68,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/path_find_dynamic.py" />
         <option value="$PROJECT_DIR$/hexapod_tensor.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
-      <list>
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
       </list>
     </option>
   </component>
@@ -91,6 +100,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="PyScientificConfigurable" />
@@ -114,7 +124,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.hexapod_tensor">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="Tensor hexapod" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -159,9 +169,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="path_find_dynamic" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Tensor hexapod" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/path_find_dynamic.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.hexapod_tensor" />
+        <item itemvalue="Python.path_find_dynamic" />
       </list>
     </recent_temporary>
   </component>
@@ -181,12 +214,17 @@
       <workItem from="1554638216915" duration="2614000" />
       <workItem from="1554640845555" duration="1409000" />
       <workItem from="1554642533721" duration="923000" />
-      <workItem from="1554643540174" duration="36000" />
+      <workItem from="1554643540174" duration="1358000" />
+      <workItem from="1554657108129" duration="1897000" />
+      <workItem from="1554713314296" duration="115000" />
+      <workItem from="1554735480443" duration="348000" />
+      <workItem from="1554879883593" duration="1348000" />
+      <workItem from="1554910644390" duration="5660000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="23172000" />
+    <option name="totallyTimeSpent" value="33862000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -201,12 +239,12 @@
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1283896" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13558385" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4997233" visible="true" weight="0.23542117" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4997233" visible="true" weight="0.19762419" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39978448" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -216,22 +254,22 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5002767" side_tool="true" weight="0.3297414" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.3297414" />
-      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.4997233" weight="0.3297414" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.4997233" weight="0.18142548" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="3" sideWeight="0.5042373" visible="true" weight="0.320974" />
+      <window_info anchor="right" id="SciView" order="3" sideWeight="0.49676025" visible="true" weight="0.44161594" />
       <window_info anchor="right" id="R Graphics" order="4" weight="0.32982844" />
       <window_info anchor="right" id="R Packages" order="5" weight="0.32982844" />
       <window_info anchor="right" id="Database" order="6" weight="0.32982844" />
-      <window_info anchor="right" x="0" y="0" width="413" height="855" id="Documentation" order="7" sideWeight="0.4957627" side_tool="true" weight="0.320974" />
+      <window_info anchor="right" x="0" y="0" width="413" height="855" id="Documentation" order="7" sideWeight="0.50323975" side_tool="true" weight="0.3215274" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Tensor_hexapod$hexapod_tensor.coverage" NAME="hexapod_tensor Coverage Results" MODIFIED="1554643560451" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Tensor_hexapod$hexapod_tensor.coverage" NAME="hexapod_tensor Coverage Results" MODIFIED="1554915827070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/.conda/envs/keras/lib/python3.6/codecs.py">
@@ -243,10 +281,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/hexapod_tensor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="19" lean-forward="true" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+        <state relative-caret-position="555">
+          <caret line="204" column="44" lean-forward="true" selection-start-line="204" selection-start-column="44" selection-end-line="204" selection-end-column="44" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#8735#9543#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/path_find_dynamic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1155">
+          <caret line="81" column="16" selection-start-line="81" selection-start-column="16" selection-end-line="81" selection-end-column="16" />
+          <folding>
+            <element signature="e#111#122#0" expanded="true" />
           </folding>
         </state>
       </provider>

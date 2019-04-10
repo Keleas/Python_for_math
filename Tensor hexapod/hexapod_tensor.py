@@ -7,7 +7,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 class Hexapod:
-    def __init__(self):
+    def __init__(self, axis):
+        self.axis = axis
         self.alpha = 30.
         self.beta = 15.
         self.L = 1.5
@@ -19,12 +20,16 @@ class Hexapod:
                               self.r*np.cos(2*np.pi/3*i + np.pi),
                               -self.h_c] for i in range(-1, 2)], 5)
         self.B = np.array([])
+        self.A = np.array([])
+        self.all_full_lengths = np.array([])
 
         self.nu = 1.
-        self.fi_x_0 = 5.
+        self.fi_x_0 = 3.
         self.fi_x = lambda t: self.fi_x_0 * np.sin(2*np.pi * self.nu * t)
-        self.fi_y_0 = 3.
+        self.prime_fi_x = lambda t: self.fi_x_0 * 2*np.pi * self.nu * np.cos(2*np.pi * self.nu * t)
+        self.fi_y_0 = 5.
         self.fi_y = lambda t: self.fi_y_0 * np.sin(2*np.pi * self.nu * t)
+        self.prime_fi_y = lambda t: self.fi_y_0 * 2*np.pi * self.nu * np.cos(2*np.pi * self.nu * t)
 
         self.J = np.array([[5000, 0, 0],
                            [0, 5000, 0],
@@ -48,6 +53,10 @@ class Hexapod:
         self.h = self.L * np.cos(np.pi/180.*self.alpha/2) * np.sin(np.pi/180.*self.beta)
         self.a = self.L * np.sin(np.pi/180.*self.alpha/2)
         self.r = (self.h**2 + self.a**2)**0.5
+
+        self.end_time = 2.
+        self.start_time = 0.
+        self.steps = 100
 
     def set_B(self):
         for i, A in enumerate(self.A_0):
@@ -78,7 +87,7 @@ class Hexapod:
 
     def plot_top_plane(self):
         # print(self.B)
-        A = np.dot(self.A_0, self.R_matrix_y(.25))
+        A = np.dot(self.A_0, self.R_matrix_z(.25))
         df_A = pd.DataFrame(data=self.A_0, columns=['x', 'y', 'z'])
         df_B = pd.DataFrame(data=self.B, columns=['x', 'y', 'z'])
         df_test = pd.DataFrame(data=A, columns=['x', 'y', 'z'])
@@ -98,6 +107,14 @@ class Hexapod:
         plt.show()
 
     def get_delta_l(self):
+        R_matrix = None
+        if self.axis == 'x':
+            R_matrix = self.R_matrix_x
+        elif self.axis == 'y':
+            R_matrix = self.R_matrix_y
+        elif self.axis == 'z':
+            R_matrix = self.R_matrix_z
+
         indexes = [[0, 0], [0, 1], [1, 2], [1, 3], [2, 4], [2, 5]]
 
         L_all = []  # удлинения каждого цилиндра за период
@@ -106,14 +123,18 @@ class Hexapod:
             print('index', i, j)
             dl = []
             coord = []
-            for t in np.linspace(0, 2., 100):
-                A = np.dot(self.A_0[i], self.R_matrix_y(t))
+            for t in np.linspace(self.start_time, self.end_time, self.steps):
+                try:
+                    A = np.dot(R_matrix(t), self.A_0[i])
+                except Exception:
+                    print('Type error axis')
 
-                L_1 = np.sum((A - self.B[j])**2)**0.5
-                L_1_0 = np.linalg.norm(np.subtract(self.A_0[i], self.B[j]))
+                L = np.sum((A - self.B[j])**2)**0.5
+                L_0 = np.sum((self.A_0[i] - self.B[j])**2)**0.5
+                assert L_0 - self.L <= 1e-4
 
-                print('dL[мм] = {:.5f}'.format((L_1 - L_1_0) * 1e4))
-                dl.append(round(((L_1 - L_1_0) * 1e4), 5))
+                print('dL[мм] = {:.5f}'.format((L - L_0) * 1e4))
+                dl.append(round(((L - L_0) * 1e4), 5))
                 coord.append(A)
 
             coordinates_A.append(coord)
@@ -121,15 +142,16 @@ class Hexapod:
 
             # численно находим СКОРОСТЬ изменения длины цилиндра
             v = []
-            time = np.linspace(0, 2., 100)
+            time = np.linspace(self.start_time, self.end_time, self.steps)
             for k in range(99):
                 v.append((dl[k + 1] - dl[k]) / (time[k + 1] - time[k]))
 
             print('v = ', np.round(v, 3))
-            print('v =', (np.max(np.abs(dl))) / 0.25)
+            print('v =', (np.max(np.abs(dl))) / self.end_time)
             print('###########################################################################')
 
         coordinates_A = coordinates_A[0::2]  # исключим повторение вершни
+        self.A = coordinates_A
 
         fig = plt.figure(figsize=(12,10))
         axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
@@ -138,7 +160,8 @@ class Hexapod:
                   2: 'g+--', 3: 'gx-',
                   4: 'b+--', 5: 'bx-'}
         for i in range(6):
-            plt.plot(np.linspace(0, 2., 100), L_all[i], colors[i])
+            print(L_all[i])
+            plt.plot(np.linspace(self.start_time, self.end_time, self.steps), L_all[i], colors[i])
 
         axes.set_xlabel('time')
         axes.set_ylabel('$/delta L$')
@@ -156,8 +179,10 @@ class Hexapod:
         ax = plt.axes(projection='3d')
 
         # Make a 3D quiver plot
-        x, y, z = np.zeros((3,3))
-        u, v, w = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        x, y, z = np.zeros((3, 3))
+        u, v, w = np.array([[1, 0, 0],
+                            [0, 1, 0],
+                            [0, 0, 1]])
 
         # ax.quiver(x, y, z, u, v, w, arrow_length_ratio=0.1)
         colors = {0: 'r', 1: 'orange',
@@ -192,7 +217,7 @@ class Hexapod:
 
         cur_A = np.array(A)
         # посторить смещение верхней плтаформы
-        for i in range(0, 100, 8):
+        for i in range(0, self.steps, 8):
             a = np.array([cur_A[0, i], cur_A[1, i], cur_A[2, i]])
             df_A = pd.DataFrame(data=a, columns=['x', 'y', 'z'])
             df_A = pd.concat((df_A, df_A.take([0])), axis=0)
@@ -209,6 +234,50 @@ class Hexapod:
 
         ax.view_init(30, -39)
         plt.show(block=False)
+
+    def get_all_full_len(self):
+        """
+        Полная длина каждого цилиндра
+        :return: вернуть список списков - для каждого момента времени записаны длины каждого цилиндра
+        """
+        indexes = [[0, 0], [0, 1], [1, 2], [1, 3], [2, 4], [2, 5]]
+        self.get_delta_l()
+        all_full_len = []
+        for t in np.linspace(self.start_time, self.end_time, self.steps):
+            line = []
+            for i, j in indexes:
+                L = np.sum((np.dot(self.R_matrix_y(t), self.A_0[i]) - self.B[j]) ** 2) ** 0.5
+                line.append(L)
+            all_full_len.append(line)
+
+        self.all_full_lengths = np.array(all_full_len)
+
+    def solve_dynamic_forces(self):
+        """
+        решение обратной задачи стенда
+        Первое приближение  - решение двумерной зазадчи для пооврота оси вокруг оси х
+        :return: минимальная и максимальная нагрузка на каждый цилиндр
+        """
+        self.get_all_full_len()
+        all_forces = []  # силы всех цилиндров в каждый момент времени
+        time = np.linspace(self.start_time, self.end_time, self.steps)
+        for lenghts, t in zip(self.all_full_lengths, time):
+            l1, l2, l3, l4, l5, l6 = lenghts
+            print("lengths: ", (lenghts - self.L)*1e4)
+            try:
+                f1 = (self.J[1, 1]*self.prime_fi_y(t)/np.cos(np.pi/180.*self.beta) -
+                      self.m*10*l3/np.sin(np.pi/180.*self.beta)) / (l1 - l2) / 3
+
+                f2 = (self.J[1, 1]*self.prime_fi_y(t)/np.cos(np.pi/180.*self.beta) -
+                      self.m*10*l1/np.sin(np.pi/180.*self.beta)) / (l2 - l1) / 3
+
+                all_forces.append([f1, f2])
+            except Exception:
+                continue
+
+        all_forces = np.array(all_forces)
+        print(all_forces)
+
 
     def plot_animate(self, A):
         """"
@@ -243,7 +312,17 @@ class Hexapod:
 
 
 if __name__ == "__main__":
-    hex = Hexapod()
+    hex = Hexapod(axis='z')
     hex.set_B()
     # hex.plot_top_plane()
     hex.get_delta_l()
+    hex.solve_dynamic_forces()
+    """
+    Заметки на полях:
+    
+    Вращние вокруг оси х:
+        симметрия длин по
+            1) 1, 3, 4, 6
+            2) 2, 5
+            3) 3, 4
+    """
