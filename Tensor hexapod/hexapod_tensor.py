@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import matplotlib.animation as animation
+import pylab
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -121,6 +122,12 @@ class Hexapod:
         coordinates_A = []  # координаты
         fig = plt.figure(figsize=(12, 10))
         axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+        axes.set_title('velocity and acceleration')
+        axes.set_xlabel('time, s')
+        axes.set_ylabel('velocity [mm/s] & acceleration [mm/s^2]')
+        colors = {0: 'r+--', 1: 'rx-',
+                  2: 'g+--', 3: 'gx-',
+                  4: 'b+--', 5: 'bx-'}
         for i, j in indexes:
             print('index', i, j)
             dl = []
@@ -147,28 +154,34 @@ class Hexapod:
             v = [0.0]
             for k in range(self.steps - 1):
                 v.append((dl[k+1] - dl[k]) / (time[k+1] - time[k]))
-            axes.plot(time[5:], v[5:])
-            axes.set_title('df')
+            # axes.plot(time[5:], v[5:], colors[j])
+            pylab.figure(1)
+            pylab.plot(time[5:], v[5:], colors[j])
             print('v_max =', np.max(np.abs(v[5:])))
 
             # численно находим УСКОРЕНИЕ изменения длины цилиндра
             a = [0.0]
             for k in range(self.steps - 1):
                 a.append((v[k + 1] - v[k]) / (time[k + 1] - time[k]))
-            axes.plot(time[5:], a[5:])
+            pylab.figure(2)
+            pylab.plot(time[5:], a[5:], colors[j])
+            # axes.plot(time[5:], a[5:], colors[j])
             print('a_max =', np.max(np.abs(a[5:])))
             print('###########################################################################')
 
-        plt.grid()
+        pylab.figure(1)
+        pylab.legend([r'1 line', '2 line', '3 line', '4 line', '5 line', '6 line'], loc=0)
+        pylab.grid()
+
+        pylab.figure(2)
+        pylab.legend([r'1 line', '2 line', '3 line', '4 line', '5 line', '6 line'], loc=0)
+        pylab.grid()
         coordinates_A = coordinates_A[0::2]  # исключим повторение вершни
         self.A = coordinates_A
 
         fig = plt.figure(figsize=(12, 10))
         axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
 
-        colors = {0: 'r+--', 1: 'rx-',
-                  2: 'g+--', 3: 'gx-',
-                  4: 'b+--', 5: 'bx-'}
         for i in range(6):
             # print(L_all[i])
             plt.plot(np.linspace(self.start_time, self.end_time, self.steps), L_all[i], colors[i])
