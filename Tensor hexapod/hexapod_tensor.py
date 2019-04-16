@@ -10,9 +10,9 @@ class Hexapod:
     def __init__(self, axis):
         self.axis = axis
         self.alpha = 30.
-        self.beta = 15.
+        self.beta = 30.
         self.L = 1.5
-        self.h_c = 2.5
+        self.h_c = 1.5
         self.r = 1.
         self.m = 2500.
 
@@ -23,11 +23,11 @@ class Hexapod:
         self.A = np.array([])
         self.all_full_lengths = np.array([])
 
-        self.nu = 1.
+        self.nu = 0.5
         self.fi_x_0 = 3.
         self.fi_x = lambda t: self.fi_x_0 * np.sin(2*np.pi * self.nu * t)
         self.prime_fi_x = lambda t: self.fi_x_0 * 2*np.pi * self.nu * np.cos(2*np.pi * self.nu * t)
-        self.fi_y_0 = 5.
+        self.fi_y_0 = 3.
         self.fi_y = lambda t: self.fi_y_0 * np.sin(2*np.pi * self.nu * t)
         self.prime_fi_y = lambda t: self.fi_y_0 * 2*np.pi * self.nu * np.cos(2*np.pi * self.nu * t)
 
@@ -81,8 +81,8 @@ class Hexapod:
         for A in self.A_0:
             assert np.linalg.norm(np.subtract(A, self.B[i])) - self.L <= 1e-4
             assert np.linalg.norm(np.subtract(A, self.B[i + 1])) - self.L <= 1e-4
-            print(np.linalg.norm(np.subtract(A, self.B[i])))
-            print(np.linalg.norm(np.subtract(A, self.B[i + 1])))
+            # print(np.linalg.norm(np.subtract(A, self.B[i])))
+            # print(np.linalg.norm(np.subtract(A, self.B[i + 1])))
             i += 2
 
     def plot_top_plane(self):
@@ -119,6 +119,8 @@ class Hexapod:
 
         L_all = []  # удлинения каждого цилиндра за период
         coordinates_A = []  # координаты
+        fig = plt.figure(figsize=(12, 10))
+        axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
         for i, j in indexes:
             print('index', i, j)
             dl = []
@@ -133,38 +135,46 @@ class Hexapod:
                 L_0 = np.sum((self.A_0[i] - self.B[j])**2)**0.5
                 assert L_0 - self.L <= 1e-4
 
-                print('dL[мм] = {:.5f}'.format((L - L_0) * 1e4))
+                # print('dL[мм] = {:.5f}'.format((L - L_0) * 1e4))
                 dl.append(round(((L - L_0) * 1e4), 5))
                 coord.append(A)
 
             coordinates_A.append(coord)
             L_all.append(dl)
 
-            # численно находим СКОРОСТЬ изменения длины цилиндра
-            v = []
             time = np.linspace(self.start_time, self.end_time, self.steps)
-            for k in range(99):
-                v.append((dl[k + 1] - dl[k]) / (time[k + 1] - time[k]))
+            # численно находим СКОРОСТЬ изменения длины цилиндра
+            v = [0.0]
+            for k in range(self.steps - 1):
+                v.append((dl[k+1] - dl[k]) / (time[k+1] - time[k]))
+            axes.plot(time[5:], v[5:])
+            axes.set_title('df')
+            print('v_max =', np.max(np.abs(v[5:])))
 
-            print('v = ', np.round(v, 3))
-            print('v =', (np.max(np.abs(dl))) / self.end_time)
+            # численно находим УСКОРЕНИЕ изменения длины цилиндра
+            a = [0.0]
+            for k in range(self.steps - 1):
+                a.append((v[k + 1] - v[k]) / (time[k + 1] - time[k]))
+            axes.plot(time[5:], a[5:])
+            print('a_max =', np.max(np.abs(a[5:])))
             print('###########################################################################')
 
+        plt.grid()
         coordinates_A = coordinates_A[0::2]  # исключим повторение вершни
         self.A = coordinates_A
 
-        fig = plt.figure(figsize=(12,10))
+        fig = plt.figure(figsize=(12, 10))
         axes = fig.add_axes([0.1, 0.1, 0.8, 0.8])
 
         colors = {0: 'r+--', 1: 'rx-',
                   2: 'g+--', 3: 'gx-',
                   4: 'b+--', 5: 'bx-'}
         for i in range(6):
-            print(L_all[i])
+            # print(L_all[i])
             plt.plot(np.linspace(self.start_time, self.end_time, self.steps), L_all[i], colors[i])
 
-        axes.set_xlabel('time')
-        axes.set_ylabel('$/delta L$')
+        axes.set_xlabel('time, s')
+        axes.set_ylabel('dL, mm')
         axes.legend([r'1 line', '2 line', '3 line', '4 line', '5 line', '6 line'], loc=0)
         plt.grid()
         plt.show()
@@ -178,13 +188,6 @@ class Hexapod:
         plt.figure(figsize=(12, 10))
         ax = plt.axes(projection='3d')
 
-        # Make a 3D quiver plot
-        x, y, z = np.zeros((3, 3))
-        u, v, w = np.array([[1, 0, 0],
-                            [0, 1, 0],
-                            [0, 0, 1]])
-
-        # ax.quiver(x, y, z, u, v, w, arrow_length_ratio=0.1)
         colors = {0: 'r', 1: 'orange',
                   2: 'g', 3: 'olive',
                   4: 'b', 5: 'navy'}
@@ -196,6 +199,7 @@ class Hexapod:
         for i, j in indexes:
             df_A = pd.Series(data=self.A_0[i], index=['x', 'y', 'z'])
             df_B = pd.Series(data=self.B[j], index=['x', 'y', 'z'])
+
             x = [df_A.x, df_B.x]
             y = [df_A.y, df_B.y]
             z = [df_A.z, df_B.z]
@@ -213,7 +217,7 @@ class Hexapod:
                 z = [df_A.z, df_B.z]
                 if k % 30 == 0:
                     ax.plot(x, y, z, c=colors[j], marker=markers[j])
-                    print('H_A =', z[0])
+                    # print('H_A =', z[0])
 
         cur_A = np.array(A)
         # посторить смещение верхней плтаформы
@@ -234,6 +238,7 @@ class Hexapod:
 
         ax.view_init(30, -39)
         plt.show(block=False)
+        plt.show()
 
     def get_all_full_len(self):
         """
@@ -241,7 +246,6 @@ class Hexapod:
         :return: вернуть список списков - для каждого момента времени записаны длины каждого цилиндра
         """
         indexes = [[0, 0], [0, 1], [1, 2], [1, 3], [2, 4], [2, 5]]
-        self.get_delta_l()
         all_full_len = []
         for t in np.linspace(self.start_time, self.end_time, self.steps):
             line = []
@@ -261,9 +265,9 @@ class Hexapod:
         self.get_all_full_len()
         all_forces = []  # силы всех цилиндров в каждый момент времени
         time = np.linspace(self.start_time, self.end_time, self.steps)
-        for lenghts, t in zip(self.all_full_lengths, time):
-            l1, l2, l3, l4, l5, l6 = lenghts
-            print("lengths: ", (lenghts - self.L)*1e4)
+        for lengths, t in zip(self.all_full_lengths, time):
+            l1, l2, l3, l4, l5, l6 = lengths
+            print("lengths: ", (lengths - self.L)*1e4)
             try:
                 f1 = (self.J[1, 1]*self.prime_fi_y(t)/np.cos(np.pi/180.*self.beta) -
                       self.m*10*l3/np.sin(np.pi/180.*self.beta)) / (l1 - l2) / 3
@@ -312,17 +316,8 @@ class Hexapod:
 
 
 if __name__ == "__main__":
-    hex = Hexapod(axis='z')
+    hex = Hexapod(axis='y')
     hex.set_B()
     # hex.plot_top_plane()
     hex.get_delta_l()
-    hex.solve_dynamic_forces()
-    """
-    Заметки на полях:
-    
-    Вращние вокруг оси х:
-        симметрия длин по
-            1) 1, 3, 4, 6
-            2) 2, 5
-            3) 3, 4
-    """
+    # hex.solve_dynamic_forces()
